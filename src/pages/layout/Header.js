@@ -43,7 +43,7 @@ export class Header extends Component {
               <ul className="navbar-nav ml-auto">
                 <li className="nav-item">
                   <button className={`nav-link ${styles.button_transparent}`}>
-                    Chart
+                    Cart
                   </button>
                 </li>
                 <li className="nav-item dropdown">

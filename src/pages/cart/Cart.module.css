@@ -1,0 +1,36 @@
+.merchant_logo {
+  width: 30px;
+  border-radius: 50px;
+}
+
+.merchant_name {
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.merchant_name:hover {
+  cursor: pointer;
+  color: dodgerblue;
+}
+
+.product_image {
+  width: 100px;
+}
+
+.product_name {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.product_name:hover {
+  cursor: pointer;
+  color: dodgerblue;
+}
+
+.qty {
+  width: 50px;
+}
+
+.icon_hover:hover {
+  cursor: pointer;
+}

@@ -31,6 +31,8 @@ class ProductDetail extends Component {
         }
       }
     };
+
+    this.handleAddToCart = this.handleAddToCart.bind(this);
   }
 
   async componentDidMount() {
@@ -69,6 +71,10 @@ class ProductDetail extends Component {
       });
   }
 
+  handleAddToCart() {
+    this.props.history.push("/cart");
+  }
+
   render() {
     return (
       <div className="row mt-4 mb-4">
@@ -91,11 +97,11 @@ class ProductDetail extends Component {
                   {this.state.product.product_name}
                 </h5>
                 <p className="card-text">{this.state.product.description}</p>
-                <p className="card-text">
+                <div className="card-text">
                   <h4 className="text-muted">
                     Rp {formatRupiah(this.state.product.price.toString())}
                   </h4>
-                </p>
+                </div>
                 <hr />
                 <div className="media">
                   <img
@@ -107,8 +113,11 @@ class ProductDetail extends Component {
                     <span className={`mt-0 ${styles.merchant_name}`}>
                       {this.state.product.merchant.merchant_name}
                     </span>
-                    <button className="btn btn-primary float-right">
-                      Add To Chart
+                    <button
+                      className="btn btn-primary float-right"
+                      onClick={this.handleAddToCart}
+                    >
+                      Add To Cart
                     </button>
                   </div>
                 </div>
