@@ -15,6 +15,23 @@ export const LOGIN = (email, password) => {
   };
 };
 
+export const REGISTER = data => {
+  return {
+    type: "REGISTER",
+    payload: axios({
+      method: "POST",
+      url: `${config.url_dev}/auth/signup`,
+      data: {
+        name: data.name,
+        email: data.email,
+        password: data.password,
+        phone_number: data.phone_number,
+        address: data.address
+      }
+    })
+  };
+};
+
 export const REFRESH_TOKEN = refresh_token => {
   return {
     type: "REFRESH_TOKEN",

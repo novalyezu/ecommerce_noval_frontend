@@ -23,6 +23,16 @@ const authentication = (state = initialState, action) => {
         return { ...state, isLoading: false };
       }
 
+    //REGISTER
+    case "REGISTER_PENDING":
+      return { ...state, isLoading: true };
+    case "REGISTER_REJECTED":
+      return { ...state, isLoading: false };
+    case "REGISTER_FULFILLED":
+      if (action.payload.data.status === "ok") {
+      }
+      return { ...state, isLoading: false };
+
     //REFRESH_TOKEN
     case "REFRESH_TOKEN_PENDING":
       return { ...state, isLoading: true };

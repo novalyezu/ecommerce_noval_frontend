@@ -18,6 +18,7 @@ class Login extends Component {
     this.handleChangePassword = this.handleChangePassword.bind(this);
     this.handleLogin = this.handleLogin.bind(this);
     this.doLogin = this.doLogin.bind(this);
+    this.handleToRegister = this.handleToRegister.bind(this);
   }
 
   componentDidMount() {
@@ -83,6 +84,10 @@ class Login extends Component {
     }
   }
 
+  handleToRegister() {
+    this.props.history.push("/register");
+  }
+
   render() {
     return (
       <div>
@@ -126,6 +131,14 @@ class Login extends Component {
                     Sign in
                   </button>
                 )}
+                <div className="mt-2">
+                  <button
+                    onClick={this.handleToRegister}
+                    className={styles.btn_register}
+                  >
+                    i don't have an account.
+                  </button>
+                </div>
               </div>
             </div>
           </div>
