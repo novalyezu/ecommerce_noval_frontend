@@ -26,6 +26,7 @@ export const REGISTER = data => {
         email: data.email,
         password: data.password,
         phone_number: data.phone_number,
+        role: "customer",
         address: data.address
       }
     })

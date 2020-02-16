@@ -4,12 +4,14 @@ import authentication from "./authentication";
 import product from "./product";
 import cart from "./cart";
 import payment from "./payment";
+import shop from "./shop";
 
 const appReducer = combineReducers({
   authentication,
   product,
   cart,
-  payment
+  payment,
+  shop
 });
 
 export default appReducer;

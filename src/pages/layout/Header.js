@@ -7,9 +7,30 @@ class Header extends Component {
   constructor(props) {
     super(props);
 
-    this.state = {};
+    this.state = {
+      name: "",
+      role: ""
+    };
 
     this.handleLogout = this.handleLogout.bind(this);
+    this.handleBukaToko = this.handleBukaToko.bind(this);
+  }
+
+  async componentDidMount() {
+    await this.checkUserData();
+  }
+
+  async checkUserData() {
+    if (this.props.authentication.data.data !== undefined) {
+      this.setState({
+        name: this.props.authentication.data.data.name,
+        role: this.props.authentication.data.data.role
+      });
+    } else {
+      setTimeout(() => {
+        this.checkUserData();
+      }, 500);
+    }
   }
 
   handleLogout() {
@@ -18,6 +39,12 @@ class Header extends Component {
     window.localStorage.removeItem("refreshToken");
     this.props.dispatch(LOGOUT());
     this.props.history.push("/login");
+  }
+
+  handleBukaToko() {
+    if (this.state.role === "customer") {
+      this.props.history.push("/shop/register");
+    }
   }
 
   render() {
@@ -77,14 +104,19 @@ class Header extends Component {
                     aria-haspopup="true"
                     aria-expanded="false"
                   >
-                    Noval
+                    {this.state.name}
                   </a>
                   <div
                     className="dropdown-menu"
                     aria-labelledby="navbarDropdown"
                   >
                     <button className="dropdown-item">Profile</button>
-                    <button className="dropdown-item">Buka Toko</button>
+                    <button
+                      className="dropdown-item"
+                      onClick={this.handleBukaToko}
+                    >
+                      Buka Toko
+                    </button>
                     <div className="dropdown-divider"></div>
                     <button
                       className="dropdown-item"

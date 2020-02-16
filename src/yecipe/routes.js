@@ -4,6 +4,8 @@ import Redirect404 from "../pages/error/Redirect404";
 import Cart from "../pages/cart/Cart";
 import Checkout from "../pages/checkout/Checkout";
 import CheckPayment from "../pages/checkout/CheckPayment";
+import RegisterShop from "../pages/shop/RegisterShop";
+import Shop from "../pages/shop/Shop";
 
 const routes = [
   { path: "/", exact: true, component: Home },
@@ -11,6 +13,8 @@ const routes = [
   { path: "/cart", exact: true, component: Cart },
   { path: "/checkout", exact: true, component: Checkout },
   { path: "/check_payment", exact: true, component: CheckPayment },
+  { path: "/shop", exact: true, component: Shop },
+  { path: "/shop/register", exact: true, component: RegisterShop },
   { path: "*", exact: true, component: Redirect404 }
 ];
 

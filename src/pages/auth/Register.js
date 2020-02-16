@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import styles from "./Register.module.css";
 import { connect } from "react-redux";
 
-import { LOGIN, REGISTER } from "../../yecipe/redux/actions/authentication";
+import { REGISTER } from "../../yecipe/redux/actions/authentication";
 
 class Register extends Component {
   constructor(props) {
@@ -81,7 +81,7 @@ class Register extends Component {
     return (
       <div>
         <div className="row">
-          <div className="col-md-4 mx-auto mt-4">
+          <div className="col-md-4 mx-auto mt-4 mb-4">
             <div className={`card ${styles.vertical_center}`}>
               <div className="card-body">
                 <h4 className="text-center">Register</h4>
@@ -121,7 +121,7 @@ class Register extends Component {
                   />
                 </div>
                 <div className="form-group">
-                  <label for="exampleInputPassword1">Password</label>
+                  <label htmlFor="exampleInputPassword1">Password</label>
                   <input
                     type="password"
                     className="form-control"
@@ -132,7 +132,7 @@ class Register extends Component {
                   />
                 </div>
                 <div className="form-group">
-                  <label htmlFor="addressInput">Phone Number</label>
+                  <label htmlFor="addressInput">Address</label>
                   <textarea
                     className="form-control"
                     id="addressInput"
