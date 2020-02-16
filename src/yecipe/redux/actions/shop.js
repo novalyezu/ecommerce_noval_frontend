@@ -14,3 +14,29 @@ export const REGISTER_SHOP = (data, token) => {
     })
   };
 };
+
+export const GET_SHOP_OWNER = (user_id, token) => {
+  return {
+    type: "GET_SHOP_OWNER",
+    payload: axios({
+      method: "GET",
+      url: `${config.url_dev}/merchants/${user_id}/owner`,
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    })
+  };
+};
+
+export const GET_PRODUCT_BY_SHOP = (merchant_id, token) => {
+  return {
+    type: "GET_PRODUCT_BY_SHOP",
+    payload: axios({
+      method: "GET",
+      url: `${config.url_dev}/products/by_merchant/${merchant_id}`,
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    })
+  };
+};

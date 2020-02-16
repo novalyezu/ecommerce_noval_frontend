@@ -62,9 +62,13 @@ class RegisterShop extends Component {
 
   async checkUserData() {
     if (this.props.authentication.data.data !== undefined) {
-      this.setState({
-        user_id: this.props.authentication.data.data.id_user
-      });
+      if (this.props.authentication.data.data.role === "customer") {
+        this.setState({
+          user_id: this.props.authentication.data.data.id_user
+        });
+      } else {
+        this.props.history.push("/404");
+      }
     } else {
       setTimeout(() => {
         this.checkUserData();

@@ -1,5 +1,14 @@
 const initialState = {
-  data: [],
+  dataOwner: {
+    id_merchant: "",
+    merchant_name: "",
+    merchant_logo: "",
+    description: "",
+    address: "",
+    open_date: "",
+    user_id: ""
+  },
+  dataProductsOwner: [],
   isLoading: false,
   error: {
     name: "",
@@ -19,7 +28,35 @@ const shop = (state = initialState, action) => {
       return { ...state, isLoading: false };
     case "REGISTER_SHOP_FULFILLED":
       if (action.payload.data.status === "ok") {
-        state.data = action.payload.data.data;
+        state.dataOwner = action.payload.data.data;
+      }
+      return { ...state, isLoading: false };
+
+    //GET_SHOP_OWNER
+    case "GET_SHOP_OWNER_PENDING":
+      return { ...state, isLoading: true };
+    case "GET_SHOP_OWNER_REJECTED":
+      if (action.payload.response) {
+        state.error = action.payload.response.data;
+      }
+      return { ...state, isLoading: false };
+    case "GET_SHOP_OWNER_FULFILLED":
+      if (action.payload.data.status === "ok") {
+        state.dataOwner = action.payload.data.data;
+      }
+      return { ...state, isLoading: false };
+
+    //GET_PRODUCT_BY_SHOP
+    case "GET_PRODUCT_BY_SHOP_PENDING":
+      return { ...state, isLoading: true };
+    case "GET_PRODUCT_BY_SHOP_REJECTED":
+      if (action.payload.response) {
+        state.error = action.payload.response.data;
+      }
+      return { ...state, isLoading: false };
+    case "GET_PRODUCT_BY_SHOP_FULFILLED":
+      if (action.payload.data.status === "ok") {
+        state.dataProductsOwner = action.payload.data.data;
       }
       return { ...state, isLoading: false };
 

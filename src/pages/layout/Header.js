@@ -44,6 +44,8 @@ class Header extends Component {
   handleBukaToko() {
     if (this.state.role === "customer") {
       this.props.history.push("/shop/register");
+    } else {
+      this.props.history.push("/shop");
     }
   }
 
