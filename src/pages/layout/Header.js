@@ -42,7 +42,10 @@ export class Header extends Component {
               </form>
               <ul className="navbar-nav ml-auto">
                 <li className="nav-item">
-                  <button className={`nav-link ${styles.button_transparent}`}>
+                  <button
+                    className={`nav-link ${styles.button_transparent}`}
+                    onClick={() => this.props.history.push("/cart")}
+                  >
                     Cart
                   </button>
                 </li>

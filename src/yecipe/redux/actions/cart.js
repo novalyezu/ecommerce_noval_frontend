@@ -48,7 +48,7 @@ export const ADD_TO_CART = (orderData, token) => {
   return {
     type: "ADD_TO_CART",
     payload: axios({
-      method: "DELETE",
+      method: "POST",
       url: `${config.url_dev}/orders/add_item`,
       data: {
         total_item: orderData.total_item,

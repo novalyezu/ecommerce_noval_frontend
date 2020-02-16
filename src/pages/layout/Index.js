@@ -7,6 +7,7 @@ import {
   REFRESH_TOKEN,
   LOGOUT
 } from "../../yecipe/redux/actions/authentication";
+import { GET_CART } from "../../yecipe/redux/actions/cart";
 
 class Index extends Component {
   constructor(props) {
@@ -18,17 +19,18 @@ class Index extends Component {
     this.handleCheckLogin = this.handleCheckLogin.bind(this);
   }
 
-  componentDidMount() {
-    this.handleCheckLogin();
+  async componentDidMount() {
+    await this.handleCheckLogin();
+    await this.handleGetCart();
   }
 
-  handleCheckLogin() {
+  async handleCheckLogin() {
     if (!this.props.authentication.isLogin) {
       if (!window.localStorage.getItem("refreshToken")) {
         this.props.history.push("/login");
       } else {
         const refreshToken = window.localStorage.getItem("refreshToken");
-        this.doRefreshToken(refreshToken)
+        await this.doRefreshToken(refreshToken)
           .then(() => {
             const { authentication } = this.props;
             if (authentication.isLoading && authentication.isLogin) {
@@ -59,6 +61,33 @@ class Index extends Component {
     await this.props.dispatch(REFRESH_TOKEN(refreshToken));
   }
 
+  // GET_CART
+  async getCart() {
+    let token = window.localStorage.getItem("token");
+    let user_id = this.props.authentication.data.data.id_user;
+    await this.props.dispatch(GET_CART(user_id, token));
+  }
+
+  async handleGetCart() {
+    await this.getCart()
+      .then(() => {})
+      .catch(async err => {
+        if (err.message === "Network Error") {
+          setTimeout(() => {
+            alert(
+              "Maaf ada kesalahan pada server kami, tunggu beberapa saat dan coba lagi. \ncontact: indonesia.car.auction@gmail.com"
+            );
+            this.props.history.push("/500");
+          }, 1000);
+        } else if (this.props.cart.error.name === "TokenExpired") {
+          await this.handleRefreshToken();
+          await this.handleGetCart();
+        } else {
+          console.log(err);
+        }
+      });
+  }
+
   render() {
     return (
       <div>
@@ -80,7 +109,8 @@ class Index extends Component {
 
 const mapStateToProps = state => {
   return {
-    authentication: state.authentication
+    authentication: state.authentication,
+    cart: state.cart
   };
 };
 

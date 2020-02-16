@@ -55,7 +55,10 @@ const cart = (state = initialState, action) => {
       }
       return { ...state, isLoading: false };
     case "ADD_TO_CART_FULFILLED":
-      state.data = [];
+      if (action.payload.data.status === "ok") {
+        let resData = action.payload.data.data;
+        state.data = resData;
+      }
       return { ...state, isLoading: false };
 
     default:

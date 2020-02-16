@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import styles from "./ProductDetail.module.css";
 import { GET_PRODUCT } from "../../yecipe/redux/actions/product";
+import { ADD_TO_CART } from "../../yecipe/redux/actions/cart";
 import { formatRupiah } from "../../yecipe/functions/formatRupiah";
 
 class ProductDetail extends Component {
@@ -32,12 +33,11 @@ class ProductDetail extends Component {
       }
     };
 
-    this.handleAddToCart = this.handleAddToCart.bind(this);
+    this.handleAddToCartClick = this.handleAddToCartClick.bind(this);
   }
 
   async componentDidMount() {
     await this.handleGetProduct();
-    console.log(this.state.product);
   }
 
   // GET_PRODUCT
@@ -71,8 +71,60 @@ class ProductDetail extends Component {
       });
   }
 
-  handleAddToCart() {
-    this.props.history.push("/cart");
+  // ADD_TO_CART
+  async addToCart() {
+    let token = window.localStorage.getItem("token");
+    let order_id = null;
+    if (this.props.cart.data.length > 0) {
+      let findSameMerchant = this.props.cart.data.find(obj => {
+        return obj.merchant_id === this.state.product.merchant_id;
+      });
+      if (findSameMerchant) {
+        order_id = findSameMerchant.id_order;
+      }
+    }
+    let orderData = {
+      total_item: 1,
+      merchant_id: this.state.product.merchant_id,
+      user_id: this.props.authentication.data.data.id_user,
+      qty: 1,
+      sub_total: this.state.product.price,
+      product_id: this.state.product_id,
+      order_id: order_id
+    };
+    await this.props.dispatch(ADD_TO_CART(orderData, token));
+  }
+
+  async handleAddToCart() {
+    this.setState({
+      isLoading: true
+    });
+    await this.addToCart()
+      .then(() => {
+        this.setState({
+          isLoading: false
+        });
+      })
+      .catch(async err => {
+        if (err.message === "Network Error") {
+          setTimeout(() => {
+            alert(
+              "Maaf ada kesalahan pada server kami, tunggu beberapa saat dan coba lagi. \ncontact: indonesia.car.auction@gmail.com"
+            );
+            this.props.history.push("/500");
+          }, 1000);
+        } else if (this.props.cart.error.name === "TokenExpired") {
+          await this.handleRefreshToken();
+          await this.handleAddToCart();
+        } else {
+          console.log(err);
+        }
+      });
+  }
+
+  async handleAddToCartClick() {
+    await this.handleAddToCart();
+    alert("Berhasil menambahkan product ke keranjang!");
   }
 
   render() {
@@ -115,7 +167,7 @@ class ProductDetail extends Component {
                     </span>
                     <button
                       className="btn btn-primary float-right"
-                      onClick={this.handleAddToCart}
+                      onClick={this.handleAddToCartClick}
                     >
                       Add To Cart
                     </button>
@@ -132,7 +184,9 @@ class ProductDetail extends Component {
 
 const mapStateToProp = state => {
   return {
-    product: state.product
+    authentication: state.authentication,
+    product: state.product,
+    cart: state.cart
   };
 };
 
