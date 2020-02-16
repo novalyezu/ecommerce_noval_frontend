@@ -21,7 +21,6 @@ class Home extends Component {
 
   async componentDidMount() {
     await this.handleGetProducts();
-    console.log(this.state.products);
   }
 
   // GET_PRODUCTS
@@ -75,7 +74,13 @@ class Home extends Component {
           <div>
             <div className="row mt-4">
               {this.state.products.map((data, index) => {
-                return <Product data={data} key={index} />;
+                return (
+                  <Product
+                    data={data}
+                    key={index}
+                    history={this.props.history}
+                  />
+                );
               })}
             </div>
             {this.state.isLoadingLoadMore ? (

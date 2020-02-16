@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import styles from "./Product.module.css";
 import { formatRupiah } from "../../yecipe/functions/formatRupiah";
 import { truncateString } from "../../yecipe/functions/truncateString";
 
@@ -24,7 +25,14 @@ export class Product extends Component {
             </div>
             <div className="col-md-8">
               <div className="card-body">
-                <h5 className="card-title">{data.product_name}</h5>
+                <h5
+                  className={`card-title ${styles.title_hover}`}
+                  onClick={() =>
+                    this.props.history.push(`/product/${data.id_product}`)
+                  }
+                >
+                  {data.product_name}
+                </h5>
                 <p className="card-text">{truncateString(data.description)}</p>
                 <p className="card-text">
                   <small className="text-muted">

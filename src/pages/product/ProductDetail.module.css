@@ -1,0 +1,14 @@
+.merchant_logo {
+  width: 40px;
+  border-radius: 50px;
+}
+
+.merchant_name {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.merchant_name:hover {
+  cursor: pointer;
+  color: dodgerblue;
+}

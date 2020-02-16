@@ -10,3 +10,13 @@ export const GET_PRODUCTS = (start_at, limit, sort_by_harga) => {
     })
   };
 };
+
+export const GET_PRODUCT = product_id => {
+  return {
+    type: "GET_PRODUCT",
+    payload: axios({
+      method: "GET",
+      url: `${config.url_dev}/products/${product_id}/detail`
+    })
+  };
+};
