@@ -10,6 +10,7 @@ class Home extends Component {
     this.state = {
       isLoading: true,
       products: [],
+      sort_by_harga: "",
       start_at: 0,
       limit: 1,
       isLoadingLoadMore: false,
@@ -26,7 +27,11 @@ class Home extends Component {
   // GET_PRODUCTS
   async getProducts() {
     await this.props.dispatch(
-      GET_PRODUCTS(this.state.start_at, this.state.limit, undefined)
+      GET_PRODUCTS(
+        this.state.start_at,
+        this.state.limit,
+        this.state.sort_by_harga
+      )
     );
   }
 
@@ -73,34 +78,54 @@ class Home extends Component {
         ) : (
           <div>
             <div className="row mt-4">
-              {this.state.products.map((data, index) => {
-                return (
-                  <Product
-                    data={data}
-                    key={index}
-                    history={this.props.history}
-                  />
-                );
-              })}
-            </div>
-            {this.state.isLoadingLoadMore ? (
-              <div className="text-center">
-                <div className="spinner-border" role="status">
-                  <span className="sr-only">Loading...</span>
-                </div>
-              </div>
-            ) : (
-              <div className="text-center">
-                {this.state.loadMore ? (
-                  <button
-                    className="btn btn-outline-primary"
-                    onClick={this.handleGetProducts}
+              <div className="col-md-8 mx-auto">
+                <div className="mb-2">
+                  Urutkan Berdasarkan
+                  <select
+                    className="float-right"
+                    onChange={async e => {
+                      await this.setState({
+                        sort_by_harga: e.target.value,
+                        start_at: 0,
+                        limit: 1,
+                        products: []
+                      });
+                      await this.handleGetProducts();
+                    }}
                   >
-                    load more
-                  </button>
-                ) : null}
+                    <option value="termurah">Harga Termurah</option>
+                    <option value="termahal">Harga Termahal</option>
+                  </select>
+                </div>
+                {this.state.products.map((data, index) => {
+                  return (
+                    <Product
+                      data={data}
+                      key={index}
+                      history={this.props.history}
+                    />
+                  );
+                })}
+                {this.state.isLoadingLoadMore ? (
+                  <div className="text-center">
+                    <div className="spinner-border" role="status">
+                      <span className="sr-only">Loading...</span>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="text-center">
+                    {this.state.loadMore ? (
+                      <button
+                        className="btn btn-outline-primary"
+                        onClick={this.handleGetProducts}
+                      >
+                        load more
+                      </button>
+                    ) : null}
+                  </div>
+                )}
               </div>
-            )}
+            </div>
           </div>
         )}
       </div>

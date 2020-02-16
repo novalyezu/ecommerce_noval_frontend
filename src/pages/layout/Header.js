@@ -1,7 +1,25 @@
 import React, { Component } from "react";
 import styles from "./Header.module.css";
+import { connect } from "react-redux";
+import { LOGOUT } from "../../yecipe/redux/actions/authentication";
 
-export class Header extends Component {
+class Header extends Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {};
+
+    this.handleLogout = this.handleLogout.bind(this);
+  }
+
+  handleLogout() {
+    window.localStorage.removeItem("userData");
+    window.localStorage.removeItem("token");
+    window.localStorage.removeItem("refreshToken");
+    this.props.dispatch(LOGOUT());
+    this.props.history.push("/login");
+  }
+
   render() {
     return (
       <div>
@@ -68,7 +86,12 @@ export class Header extends Component {
                     <button className="dropdown-item">Profile</button>
                     <button className="dropdown-item">Buka Toko</button>
                     <div className="dropdown-divider"></div>
-                    <button className="dropdown-item">Logout</button>
+                    <button
+                      className="dropdown-item"
+                      onClick={this.handleLogout}
+                    >
+                      Logout
+                    </button>
                   </div>
                 </li>
               </ul>
@@ -80,4 +103,10 @@ export class Header extends Component {
   }
 }
 
-export default Header;
+const mapStateToProps = state => {
+  return {
+    authentication: state.authentication
+  };
+};
+
+export default connect(mapStateToProps)(Header);
