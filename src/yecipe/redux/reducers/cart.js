@@ -61,6 +61,17 @@ const cart = (state = initialState, action) => {
       }
       return { ...state, isLoading: false };
 
+    //UPDATE_QTY
+    case "UPDATE_QTY_PENDING":
+      return { ...state, isLoading: true };
+    case "UPDATE_QTY_REJECTED":
+      if (action.payload.response) {
+        state.error = action.payload.response.data;
+      }
+      return { ...state, isLoading: false };
+    case "UPDATE_QTY_FULFILLED":
+      return { ...state, isLoading: false };
+
     default:
       return state;
   }

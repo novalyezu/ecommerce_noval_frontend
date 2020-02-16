@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import styles from "./ProductDetail.module.css";
 import { GET_PRODUCT } from "../../yecipe/redux/actions/product";
-import { ADD_TO_CART } from "../../yecipe/redux/actions/cart";
+import { ADD_TO_CART, UPDATE_QTY } from "../../yecipe/redux/actions/cart";
 import { formatRupiah } from "../../yecipe/functions/formatRupiah";
 
 class ProductDetail extends Component {
@@ -81,18 +81,30 @@ class ProductDetail extends Component {
       });
       if (findSameMerchant) {
         order_id = findSameMerchant.id_order;
+        let findSameProduct = findSameMerchant.order_item.find(obj => {
+          return obj.product_id === this.state.product.id_product;
+        });
+        if (findSameProduct) {
+          let qty = findSameProduct.qty + 1;
+          let sub_total = findSameProduct.product.price * qty;
+
+          await this.props.dispatch(
+            UPDATE_QTY(qty, sub_total, findSameProduct.id_order_item, token)
+          );
+        } else {
+          let orderData = {
+            total_item: 1,
+            merchant_id: this.state.product.merchant_id,
+            user_id: this.props.authentication.data.data.id_user,
+            qty: 1,
+            sub_total: this.state.product.price,
+            product_id: this.state.product_id,
+            order_id: order_id
+          };
+          await this.props.dispatch(ADD_TO_CART(orderData, token));
+        }
       }
     }
-    let orderData = {
-      total_item: 1,
-      merchant_id: this.state.product.merchant_id,
-      user_id: this.props.authentication.data.data.id_user,
-      qty: 1,
-      sub_total: this.state.product.price,
-      product_id: this.state.product_id,
-      order_id: order_id
-    };
-    await this.props.dispatch(ADD_TO_CART(orderData, token));
   }
 
   async handleAddToCart() {

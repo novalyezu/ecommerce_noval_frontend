@@ -4,7 +4,8 @@ import styles from "./Cart.module.css";
 import {
   GET_CART,
   MIN_ITEM,
-  DELETE_ORDER
+  DELETE_ORDER,
+  UPDATE_QTY
 } from "../../yecipe/redux/actions/cart";
 import update from "immutability-helper";
 import { formatRupiah } from "../../yecipe/functions/formatRupiah";
@@ -19,6 +20,8 @@ class Cart extends Component {
 
     this.state = {
       isLoading: true,
+      typingQty: false,
+      typingQtyTimeout: 0,
       cart: [
         {
           id_order: "",
@@ -142,9 +145,41 @@ class Cart extends Component {
       });
   }
 
-  handleOnChangeQtyPart(orderIndex, itemIndex, value) {
-    this.setState({
-      cart: update(this.state.cart, {
+  // UPDATE_QTY
+  async updateQty(qty, sub_total, id_order_item) {
+    let token = window.localStorage.getItem("token");
+    await this.props.dispatch(UPDATE_QTY(qty, sub_total, id_order_item, token));
+  }
+
+  async handleUpdateQty(qty, sub_total, id_order_item) {
+    await this.updateQty(qty, sub_total, id_order_item)
+      .then(() => {})
+      .catch(async err => {
+        if (err.message === "Network Error") {
+          setTimeout(() => {
+            alert(
+              "Maaf ada kesalahan pada server kami, tunggu beberapa saat dan coba lagi. \ncontact: indonesia.car.auction@gmail.com"
+            );
+            this.props.history.push("/500");
+          }, 1000);
+        } else if (this.props.cart.error.name === "TokenExpired") {
+          await this.handleRefreshToken();
+          await this.handleUpdateQty(qty, sub_total, id_order_item);
+        } else {
+          console.log(err);
+        }
+      });
+  }
+
+  handleOnChangeQty(orderIndex, itemIndex, value) {
+    const self = this;
+
+    if (self.state.typingQtyTimeout) {
+      clearTimeout(self.state.typingQtyTimeout);
+    }
+
+    self.setState({
+      cart: update(self.state.cart, {
         [orderIndex]: {
           order_item: {
             [itemIndex]: {
@@ -152,13 +187,23 @@ class Cart extends Component {
               sub_total: {
                 $set:
                   value *
-                  this.state.cart[orderIndex].order_item[itemIndex].product
+                  self.state.cart[orderIndex].order_item[itemIndex].product
                     .price
               }
             }
           }
         }
-      })
+      }),
+      typingQty: false,
+      typingQtyTimeout: setTimeout(function() {
+        if (self.state.cart[orderIndex].order_item[itemIndex].qty) {
+          self.handleUpdateQty(
+            self.state.cart[orderIndex].order_item[itemIndex].qty,
+            self.state.cart[orderIndex].order_item[itemIndex].sub_total,
+            self.state.cart[orderIndex].order_item[itemIndex].id_order_item
+          );
+        }
+      }, 1000)
     });
   }
 
@@ -326,13 +371,23 @@ class Cart extends Component {
                                       ></i>
                                       <i
                                         className={`fa fa-minus mr-2 ${styles.icon_hover}`}
+                                        onClick={() => {
+                                          let value =
+                                            this.state.cart[orderIndex]
+                                              .order_item[itemIndex].qty - 1;
+                                          this.handleOnChangeQty(
+                                            orderIndex,
+                                            itemIndex,
+                                            value
+                                          );
+                                        }}
                                       ></i>
                                       <input
                                         type="number"
                                         className={`mr-2 ${styles.qty}`}
                                         value={data_item.qty}
                                         onChange={e => {
-                                          this.handleOnChangeQtyPart(
+                                          this.handleOnChangeQty(
                                             orderIndex,
                                             itemIndex,
                                             e.target.value
@@ -341,6 +396,16 @@ class Cart extends Component {
                                       />
                                       <i
                                         className={`fa fa-plus ${styles.icon_hover}`}
+                                        onClick={() => {
+                                          let value =
+                                            this.state.cart[orderIndex]
+                                              .order_item[itemIndex].qty + 1;
+                                          this.handleOnChangeQty(
+                                            orderIndex,
+                                            itemIndex,
+                                            value
+                                          );
+                                        }}
                                       ></i>
                                     </div>
                                   </div>
@@ -350,6 +415,12 @@ class Cart extends Component {
                           </div>
                         );
                       })}
+                      <button
+                        className="btn btn-success btn-block"
+                        onClick={() => this.props.history.push("/checkout")}
+                      >
+                        Buy
+                      </button>
                     </div>
                   ) : (
                     <div className="text-center">

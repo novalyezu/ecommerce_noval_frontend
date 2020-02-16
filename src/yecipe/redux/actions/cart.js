@@ -65,3 +65,20 @@ export const ADD_TO_CART = (orderData, token) => {
     })
   };
 };
+
+export const UPDATE_QTY = (qty, sub_total, order_item_id, token) => {
+  return {
+    type: "UPDATE_QTY",
+    payload: axios({
+      method: "POST",
+      url: `${config.url_dev}/orders/update_qty/${order_item_id}`,
+      data: {
+        qty: qty,
+        sub_total: sub_total
+      },
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    })
+  };
+};
