@@ -595,7 +595,12 @@ class Cart extends Component {
                       </div>
                       <button
                         className="btn btn-success btn-block"
-                        onClick={() => this.props.history.push("/checkout")}
+                        onClick={() =>
+                          this.props.history.push("/checkout", {
+                            cart: this.state.cart,
+                            grand_total: this.state.grand_total
+                          })
+                        }
                       >
                         Buy
                       </button>
