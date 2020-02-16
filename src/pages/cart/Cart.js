@@ -5,10 +5,12 @@ import {
   GET_CART,
   MIN_ITEM,
   DELETE_ORDER,
-  UPDATE_QTY
+  UPDATE_QTY,
+  UPDATE_DATA_REDUX
 } from "../../yecipe/redux/actions/cart";
 import update from "immutability-helper";
 import { formatRupiah } from "../../yecipe/functions/formatRupiah";
+import { sumElementOfArray } from "../../yecipe/functions/sumElementOfArray";
 import {
   REFRESH_TOKEN,
   LOGOUT
@@ -22,6 +24,7 @@ class Cart extends Component {
       isLoading: true,
       typingQty: false,
       typingQtyTimeout: 0,
+      grand_total: 0,
       cart: [
         {
           id_order: "",
@@ -31,6 +34,15 @@ class Cart extends Component {
           shipping_service_id: "",
           user_id: "",
           invoice_id: "",
+          shipping_service_selected: {
+            id_shipping_service: "",
+            service_name: "",
+            service_logo: "",
+            type: "",
+            price: "",
+            delivery_time: ""
+          },
+          total_order: "",
           merchant: {
             id_merchant: "",
             merchant_name: "",
@@ -38,7 +50,21 @@ class Cart extends Component {
             description: "",
             address: "",
             open_date: "",
-            user_id: ""
+            user_id: "",
+            shipping_service: [
+              {
+                id_shipping_service: "",
+                service_name: "",
+                service_logo: "",
+                type: "",
+                price: "",
+                delivery_time: "",
+                merchant_shipping_service: {
+                  merchant_id: "",
+                  shipping_service_id: ""
+                }
+              }
+            ]
           },
           order_item: [
             {
@@ -62,6 +88,10 @@ class Cart extends Component {
         }
       ]
     };
+
+    this.handleOnChangeShippingService = this.handleOnChangeShippingService.bind(
+      this
+    );
   }
 
   async componentDidMount() {
@@ -122,10 +152,34 @@ class Cart extends Component {
       isLoading: true
     });
     await this.getCart()
-      .then(() => {
+      .then(async () => {
+        let newArray = this.props.cart.data;
+        let grand_total = 0;
+        let total_shipping_fee = 0;
+        for (let i = 0; i < this.props.cart.data.length; i++) {
+          let total_order = sumElementOfArray(
+            this.props.cart.data[i].order_item,
+            "sub_total"
+          );
+          total_shipping_fee += this.props.cart.data[i].merchant
+            .shipping_service[0].price;
+          grand_total += total_order;
+          let updated = update(this.props.cart.data, {
+            [i]: {
+              $merge: {
+                shipping_service_selected: this.props.cart.data[i].merchant
+                  .shipping_service[0],
+                total_order: total_order
+              }
+            }
+          });
+          newArray = updated;
+        }
+
         this.setState({
+          grand_total: grand_total + total_shipping_fee,
           isLoading: false,
-          cart: this.props.cart.data
+          cart: newArray
         });
       })
       .catch(async err => {
@@ -178,6 +232,24 @@ class Cart extends Component {
       clearTimeout(self.state.typingQtyTimeout);
     }
 
+    let total_order = 0;
+    for (let i = 0; i < self.state.cart[orderIndex].order_item.length; i++) {
+      if (itemIndex !== i) {
+        total_order += self.state.cart[orderIndex].order_item[i].sub_total;
+      }
+    }
+
+    let total_shipping_fee = 0;
+    let grand_total = 0;
+    for (let i = 0; i < self.state.cart.length; i++) {
+      if (orderIndex !== i) {
+        grand_total += self.state.cart[i].total_order;
+      } else {
+        grand_total += total_order;
+      }
+      total_shipping_fee += self.state.cart[i].shipping_service_selected.price;
+    }
+
     self.setState({
       cart: update(self.state.cart, {
         [orderIndex]: {
@@ -191,9 +263,19 @@ class Cart extends Component {
                     .price
               }
             }
+          },
+          total_order: {
+            $set:
+              total_order +
+              value *
+                self.state.cart[orderIndex].order_item[itemIndex].product.price
           }
         }
       }),
+      grand_total:
+        grand_total +
+        total_shipping_fee +
+        value * self.state.cart[orderIndex].order_item[itemIndex].product.price,
       typingQty: false,
       typingQtyTimeout: setTimeout(function() {
         if (self.state.cart[orderIndex].order_item[itemIndex].qty) {
@@ -281,23 +363,70 @@ class Cart extends Component {
           this.state.cart[orderIndex].id_order
         );
         await this.handleDeleteOrder(this.state.cart[orderIndex].id_order);
+
         let newArray = update(this.state.cart, { $splice: [[orderIndex, 1]] });
+        let grand_total =
+          this.state.grand_total -
+          (this.state.cart[orderIndex].total_order +
+            this.state.cart[orderIndex].shipping_service_selected.price);
+
         this.setState({
-          cart: newArray
+          cart: newArray,
+          grand_total: grand_total
         });
+        this.props.dispatch(UPDATE_DATA_REDUX(newArray));
       } else {
         await this.handleMinItem(
           this.state.cart[orderIndex].order_item[itemIndex].id_order_item,
           this.state.cart[orderIndex].id_order
         );
+
         let newArray = update(this.state.cart, {
-          [orderIndex]: { order_item: { $splice: [[itemIndex, 1]] } }
+          [orderIndex]: {
+            order_item: { $splice: [[itemIndex, 1]] },
+            total_order: {
+              $set:
+                this.state.cart[orderIndex].total_order -
+                this.state.cart[orderIndex].order_item[itemIndex].sub_total
+            }
+          }
         });
+
+        let grand_total =
+          this.state.grand_total -
+          this.state.cart[orderIndex].order_item[itemIndex].sub_total;
+
         this.setState({
-          cart: newArray
+          cart: newArray,
+          grand_total: grand_total
         });
+        this.props.dispatch(UPDATE_DATA_REDUX(newArray));
       }
     }
+  }
+
+  handleOnChangeShippingService(orderIndex, value) {
+    let valueParsed = JSON.parse(value);
+    let grand_total = sumElementOfArray(this.state.cart, "total_order");
+    let total_shipping_fee = 0;
+    for (let i = 0; i < this.state.cart.length; i++) {
+      if (orderIndex !== i) {
+        total_shipping_fee += this.state.cart[i].shipping_service_selected
+          .price;
+      }
+    }
+
+    let newArray = update(this.state.cart, {
+      [orderIndex]: {
+        shipping_service_selected: {
+          $set: valueParsed
+        }
+      }
+    });
+    this.setState({
+      cart: newArray,
+      grand_total: grand_total + valueParsed.price + total_shipping_fee
+    });
   }
 
   render() {
@@ -318,7 +447,7 @@ class Cart extends Component {
                     <div>
                       {this.state.cart.map((data, orderIndex) => {
                         return (
-                          <div key={orderIndex}>
+                          <div key={orderIndex} className="mb-4">
                             <div className="media">
                               <img
                                 src={data.merchant.merchant_logo}
@@ -412,9 +541,58 @@ class Cart extends Component {
                                 </div>
                               );
                             })}
+                            <div className="mb-4">
+                              <select
+                                className="custom-select col-md-3"
+                                onChange={e =>
+                                  this.handleOnChangeShippingService(
+                                    orderIndex,
+                                    e.target.value
+                                  )
+                                }
+                              >
+                                {data.merchant.shipping_service.map(
+                                  (data_ship, shipIndex) => {
+                                    return (
+                                      <option
+                                        key={shipIndex}
+                                        value={JSON.stringify(data_ship)}
+                                      >
+                                        {data_ship.service_name}
+                                      </option>
+                                    );
+                                  }
+                                )}
+                              </select>
+                              <span className="float-right">
+                                {data.shipping_service_selected.delivery_time}
+                              </span>
+                            </div>
+                            <div className="mb-2">
+                              <span>Harga Product</span>
+                              <strong className="float-right">
+                                Rp {formatRupiah(data.total_order.toString())}
+                              </strong>
+                            </div>
+                            <div className="">
+                              <span>Biaya Pengiriman</span>
+                              <strong className="float-right">
+                                Rp{" "}
+                                {formatRupiah(
+                                  data.shipping_service_selected.price.toString()
+                                )}
+                              </strong>
+                            </div>
+                            <hr />
                           </div>
                         );
                       })}
+                      <div className="mb-4">
+                        <strong>Total</strong>
+                        <strong className="float-right text-success">
+                          Rp {formatRupiah(this.state.grand_total.toString())}
+                        </strong>
+                      </div>
                       <button
                         className="btn btn-success btn-block"
                         onClick={() => this.props.history.push("/checkout")}

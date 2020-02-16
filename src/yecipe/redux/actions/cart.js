@@ -31,6 +31,15 @@ export const MIN_ITEM = (order_item_id, order_id, token) => {
   };
 };
 
+export const UPDATE_DATA_REDUX = data => {
+  return {
+    type: "UPDATE_DATA_REDUX",
+    payload: {
+      data: data
+    }
+  };
+};
+
 export const DELETE_ORDER = (order_id, token) => {
   return {
     type: "DELETE_ORDER",

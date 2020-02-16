@@ -32,6 +32,26 @@ const cart = (state = initialState, action) => {
       }
       return { ...state, isLoading: false };
     case "MIN_ITEM_FULFILLED":
+      if (action.payload.data.status === "ok") {
+        // let findSameOrder = state.data.find(obj => {
+        //   return obj.id_order === parseInt(action.payload.data.data.order_id);
+        // });
+        // let findIndexProduct = findSameOrder.order_item.findIndex(obj => {
+        //   return (
+        //     obj.id_order_item ===
+        //     parseInt(action.payload.data.data.order_item_id)
+        //   );
+        // });
+        // findSameOrder.order_item.splice(findIndexProduct, 1);
+        // Object.assign(findSameOrder, {
+        //   total_item: action.payload.data.data.total_now
+        // });
+      }
+      return { ...state, isLoading: false };
+
+    //UPDATE_DATA_REDUX
+    case "UPDATE_DATA_REDUX":
+      state.data = action.payload.data;
       return { ...state, isLoading: false };
 
     //DELETE_ORDER
@@ -43,7 +63,12 @@ const cart = (state = initialState, action) => {
       }
       return { ...state, isLoading: false };
     case "DELETE_ORDER_FULFILLED":
-      state.data = [];
+      if (action.payload.data.status === "ok") {
+        // let findIndexOrder = state.data.findIndex(obj => {
+        //   return obj.id_order === parseInt(action.payload.data.data.order_id);
+        // });
+        // state.data.splice(findIndexOrder, 1);
+      }
       return { ...state, isLoading: false };
 
     //ADD_TO_CART
@@ -57,7 +82,14 @@ const cart = (state = initialState, action) => {
     case "ADD_TO_CART_FULFILLED":
       if (action.payload.data.status === "ok") {
         let resData = action.payload.data.data;
-        state.data = resData;
+        let findSameOrder = state.data.find(obj => {
+          return obj.id_order === action.payload.data.data.id_order;
+        });
+        if (findSameOrder) {
+          Object.assign(findSameOrder, action.payload.data.data);
+        } else {
+          state.data = [...state.data, resData];
+        }
       }
       return { ...state, isLoading: false };
 
@@ -70,6 +102,21 @@ const cart = (state = initialState, action) => {
       }
       return { ...state, isLoading: false };
     case "UPDATE_QTY_FULFILLED":
+      if (action.payload.data.status === "ok") {
+        let findSameOrder = state.data.find(obj => {
+          return obj.id_order === parseInt(action.payload.data.data.order_id);
+        });
+        let findSameProduct = findSameOrder.order_item.find(obj => {
+          return (
+            obj.id_order_item ===
+            parseInt(action.payload.data.data.order_item_id)
+          );
+        });
+        Object.assign(findSameProduct, {
+          qty: action.payload.data.data.qty,
+          sub_total: action.payload.data.data.sub_total
+        });
+      }
       return { ...state, isLoading: false };
 
     default:

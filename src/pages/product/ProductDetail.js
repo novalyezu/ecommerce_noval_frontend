@@ -104,6 +104,17 @@ class ProductDetail extends Component {
           await this.props.dispatch(ADD_TO_CART(orderData, token));
         }
       }
+    } else {
+      let orderData = {
+        total_item: 1,
+        merchant_id: this.state.product.merchant_id,
+        user_id: this.props.authentication.data.data.id_user,
+        qty: 1,
+        sub_total: this.state.product.price,
+        product_id: this.state.product_id,
+        order_id: order_id
+      };
+      await this.props.dispatch(ADD_TO_CART(orderData, token));
     }
   }
 
