@@ -1,0 +1,16 @@
+.vertical_center {
+  box-shadow: 0px 0px 20px -5px rgba(0, 0, 0, 0.75);
+  margin-bottom: 40px;
+}
+
+.btn_register {
+  background: none !important;
+  border: none;
+  padding: 0 !important;
+  /*optional*/
+  font-family: arial, sans-serif;
+  /*input has OS specific font-family*/
+  color: #069;
+  text-decoration: underline;
+  cursor: pointer;
+}

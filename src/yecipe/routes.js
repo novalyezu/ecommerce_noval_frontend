@@ -6,6 +6,7 @@ import Checkout from "../pages/checkout/Checkout";
 import CheckPayment from "../pages/checkout/CheckPayment";
 import RegisterShop from "../pages/shop/RegisterShop";
 import Shop from "../pages/shop/Shop";
+import AddProduct from "../pages/shop/AddProduct";
 
 const routes = [
   { path: "/", exact: true, component: Home },
@@ -15,6 +16,11 @@ const routes = [
   { path: "/check_payment", exact: true, component: CheckPayment },
   { path: "/shop", exact: true, component: Shop },
   { path: "/shop/register", exact: true, component: RegisterShop },
+  {
+    path: "/shop/add_product/:merchant_id",
+    exact: true,
+    component: AddProduct
+  },
   { path: "*", exact: true, component: Redirect404 }
 ];
 

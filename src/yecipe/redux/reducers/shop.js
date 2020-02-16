@@ -60,6 +60,23 @@ const shop = (state = initialState, action) => {
       }
       return { ...state, isLoading: false };
 
+    //ADD_PRODUCT
+    case "ADD_PRODUCT_PENDING":
+      return { ...state, isLoading: true };
+    case "ADD_PRODUCT_REJECTED":
+      if (action.payload.response) {
+        state.error = action.payload.response.data;
+      }
+      return { ...state, isLoading: false };
+    case "ADD_PRODUCT_FULFILLED":
+      if (action.payload.data.status === "ok") {
+        state.dataProductsOwner = [
+          ...state.dataProductsOwner,
+          action.payload.data.data
+        ];
+      }
+      return { ...state, isLoading: false };
+
     default:
       return state;
   }

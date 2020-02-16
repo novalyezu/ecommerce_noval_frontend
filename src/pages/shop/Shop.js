@@ -31,6 +31,8 @@ class Shop extends Component {
       user_id: "",
       products: []
     };
+
+    this.handleToAddProduct = this.handleToAddProduct.bind(this);
   }
 
   async componentDidMount() {
@@ -161,6 +163,12 @@ class Shop extends Component {
       });
   }
 
+  handleToAddProduct() {
+    this.props.history.push(
+      `/shop/add_product/${this.state.dataShop.id_merchant}`
+    );
+  }
+
   render() {
     return (
       <div>
@@ -210,21 +218,26 @@ class Shop extends Component {
               </div>
             ) : (
               <div>
-                <button className="btn btn-primary mt-4 mb-2">Tambah</button>
+                <button
+                  className="btn btn-primary mt-4 mb-2"
+                  onClick={this.handleToAddProduct}
+                >
+                  Tambah
+                </button>
                 <h5>Products</h5>
                 <div className="row mt-2">
                   {this.state.products.map((data, index) => {
                     return (
-                      <div className="col-md-4">
+                      <div className="col-md-4" key={index}>
                         <div className="card">
                           <img
                             src={data.product_image}
-                            class="card-img-top"
+                            className="card-img-top"
                             alt={data.product_name}
                           />
                           <div className="card-body">
-                            <h5 class="card-title">{data.product_name}</h5>
-                            <p class="card-text">
+                            <h5 className="card-title">{data.product_name}</h5>
+                            <p className="card-text">
                               {truncateString(data.description)}
                             </p>
                           </div>

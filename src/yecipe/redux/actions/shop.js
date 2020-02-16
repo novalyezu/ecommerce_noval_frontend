@@ -40,3 +40,17 @@ export const GET_PRODUCT_BY_SHOP = (merchant_id, token) => {
     })
   };
 };
+
+export const ADD_PRODUCT = (data, token) => {
+  return {
+    type: "ADD_PRODUCT",
+    payload: axios({
+      method: "POST",
+      url: `${config.url_dev}/products/add_new`,
+      data,
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    })
+  };
+};
