@@ -1,0 +1,8 @@
+.merchant_logo {
+  width: 130px;
+}
+
+.title_hover:hover {
+  cursor: pointer;
+  color: dodgerblue;
+}

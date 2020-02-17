@@ -8,6 +8,15 @@ const initialState = {
     open_date: "",
     user_id: ""
   },
+  dataShop: {
+    id_merchant: "",
+    merchant_name: "",
+    merchant_logo: "",
+    description: "",
+    address: "",
+    open_date: "",
+    user_id: ""
+  },
   dataProductsOwner: [],
   isLoading: false,
   error: {
@@ -43,6 +52,20 @@ const shop = (state = initialState, action) => {
     case "GET_SHOP_OWNER_FULFILLED":
       if (action.payload.data.status === "ok") {
         state.dataOwner = action.payload.data.data;
+      }
+      return { ...state, isLoading: false };
+
+    //GET_SHOP
+    case "GET_SHOP_PENDING":
+      return { ...state, isLoading: true };
+    case "GET_SHOP_REJECTED":
+      if (action.payload.response) {
+        state.error = action.payload.response.data;
+      }
+      return { ...state, isLoading: false };
+    case "GET_SHOP_FULFILLED":
+      if (action.payload.data.status === "ok") {
+        state.dataShop = action.payload.data.data;
       }
       return { ...state, isLoading: false };
 

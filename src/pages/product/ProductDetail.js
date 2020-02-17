@@ -103,6 +103,17 @@ class ProductDetail extends Component {
           };
           await this.props.dispatch(ADD_TO_CART(orderData, token));
         }
+      } else {
+        let orderData = {
+          total_item: 1,
+          merchant_id: this.state.product.merchant_id,
+          user_id: this.props.authentication.data.data.id_user,
+          qty: 1,
+          sub_total: this.state.product.price,
+          product_id: this.state.product_id,
+          order_id: order_id
+        };
+        await this.props.dispatch(ADD_TO_CART(orderData, token));
       }
     } else {
       let orderData = {
@@ -185,7 +196,14 @@ class ProductDetail extends Component {
                     alt={this.state.product.merchant.merchant_name}
                   />
                   <div className="media-body">
-                    <span className={`mt-0 ${styles.merchant_name}`}>
+                    <span
+                      className={`mt-0 ${styles.merchant_name}`}
+                      onClick={() =>
+                        this.props.history.push(
+                          `/shop/detail/${this.state.product.merchant_id}`
+                        )
+                      }
+                    >
                       {this.state.product.merchant.merchant_name}
                     </span>
                     <button

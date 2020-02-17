@@ -28,6 +28,19 @@ export const GET_SHOP_OWNER = (user_id, token) => {
   };
 };
 
+export const GET_SHOP = (merchant_id, token) => {
+  return {
+    type: "GET_SHOP",
+    payload: axios({
+      method: "GET",
+      url: `${config.url_dev}/merchants/${merchant_id}/detail`,
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    })
+  };
+};
+
 export const GET_PRODUCT_BY_SHOP = (merchant_id, token) => {
   return {
     type: "GET_PRODUCT_BY_SHOP",

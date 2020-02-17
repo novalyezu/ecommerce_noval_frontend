@@ -173,7 +173,7 @@ class Cart extends Component {
               }
             }
           });
-          newArray = updated;
+          Object.assign(newArray[i], updated[i]);
         }
 
         this.setState({
@@ -457,6 +457,11 @@ class Cart extends Component {
                               <div className="media-body">
                                 <span
                                   className={`mt-0 ${styles.merchant_name}`}
+                                  onClick={() =>
+                                    this.props.history.push(
+                                      `/shop/detail/${data.merchant_id}`
+                                    )
+                                  }
                                 >
                                   {data.merchant.merchant_name}
                                 </span>
